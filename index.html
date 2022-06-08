@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Bysykler i Oslo</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	</head>
+	<body>
+		<h1>Ledige sykler og låser</h1>
+		<table class="stasjoner">
+			<tr>
+				<th>Stasjon</th>
+				<th>Ledige sykler</th>
+				<th>Ledige låser</th>
+			</tr>
+		</table>
+
+		<script>
+			var feed_url_stasjoner	= "https://gbfs.urbansharing.com/oslobysykkel.no/station_information.json";
+			var feed_url_sykler		= "https://gbfs.urbansharing.com/oslobysykkel.no/station_status.json";
+
+			// Henter inn stasjoner
+			jQuery.getJSON( feed_url_stasjoner, function( data_stasjoner ) {
+				var stasjoner = data_stasjoner.data.stations;
+			
+				for(id in stasjoner) {
+					jQuery(".stasjoner").append("<tr class=\"" + stasjoner[id].station_id + "\"><td>" + stasjoner[id].name + "</td></tr>");
+				}
+			}).done(function() {
+				// Henter inn status for stasjoner
+				jQuery.getJSON( feed_url_sykler, function(data_sykler) {
+					var sykler = data_sykler.data.stations;
+				
+					for(id in sykler) {
+						jQuery("." +  sykler[id].station_id).append("<td>" + sykler[id].num_bikes_available + "</td>" + "<td>" + sykler[id].num_docks_available + "</td>");
+					}
+				}).fail(function() {
+					alert( "Kunne ikke hente inn ledige sykler og låser" );
+				})					
+				
+			})
+			.fail(function() {
+				alert( "En feil har oppstått. Vennligst prøv igjen senere" );
+			});
+		</script>
+	</body>
+</html>
